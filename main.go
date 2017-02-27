@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"github.com/nel215/atcli/login"
+	"github.com/nel215/atcli/setup"
 	"github.com/nel215/atcli/store"
 	"github.com/nel215/atcli/submit"
 	"github.com/urfave/cli"
@@ -15,6 +16,21 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "atcli"
 	app.Commands = []cli.Command{
+		{
+			Name: "setup",
+			Action: func(c *cli.Context) error {
+				contestUrl := c.String("u")
+				s := setup.New()
+				err := s.Execute(contestUrl)
+				if err != nil {
+					return err
+				}
+				return nil
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{Name: "u"},
+			},
+		},
 		{
 			Name: "login",
 			Action: func(c *cli.Context) error {
