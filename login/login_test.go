@@ -1,6 +1,7 @@
 package login
 
 import (
+	"github.com/nel215/atcli/session"
 	"net/http"
 	"net/url"
 	"testing"
@@ -27,13 +28,26 @@ func postForTesing(name string, password string) (*http.Response, error) {
 	return resp, nil
 }
 
+type testingSessionStore struct {
+	sess *session.Session
+}
+
+func (tss *testingSessionStore) Save(sess *session.Session) error {
+	tss.sess = sess
+	return nil
+}
+
 func TestSubmit(t *testing.T) {
-	l := &Login{postForTesing}
-	s, err := l.Submit("name", "password")
+	l := &Login{
+		&testingSessionStore{},
+		postForTesing,
+	}
+	err := l.Submit("name", "password")
 	if err != nil {
 		t.Fatalf("submit failed")
 	}
 
+	s := l.sessionStore.(*testingSessionStore).sess
 	if s.Session != "_session" {
 		t.Fatalf("s.Session expected _session . got %s", s.Session)
 	}

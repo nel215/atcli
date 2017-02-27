@@ -29,15 +29,11 @@ func main() {
 
 				log.Printf("try logging in by %s...\n", user)
 				l := login.New()
-				sess, err := l.Submit(user, password)
+				err := l.Submit(user, password)
 				if err != nil {
 					return err
 				}
-				ss := store.NewSessionStore()
-				err = ss.Save(sess)
-				if err != nil {
-					return err
-				}
+
 				return nil
 			},
 			Flags: []cli.Flag{
