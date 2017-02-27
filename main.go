@@ -76,13 +76,8 @@ func main() {
 			Name:  "problem",
 			Usage: "describe problem list",
 			Action: func(c *cli.Context) error {
-				ss := store.NewSessionStore()
-				sess, err := ss.Load()
-				if err != nil {
-					return err
-				}
 				p := problem.New()
-				err = p.Execute(sess)
+				err := p.Execute()
 				if err != nil {
 					return err
 				}

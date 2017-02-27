@@ -3,18 +3,25 @@ package problem
 import (
 	"fmt"
 	"github.com/nel215/atcli/session"
+	"github.com/nel215/atcli/store"
 	"golang.org/x/net/html"
 	"net/http"
 )
 
 type Problem struct {
+	sessionStore interface {
+		Load() (*session.Session, error)
+	}
 }
 
 func New() *Problem {
-	return &Problem{}
+	return &Problem{
+		store.NewSessionStore(),
+	}
 }
 
-func (p *Problem) Execute(sess *session.Session) error {
+func (p *Problem) Execute() error {
+	sess, err := p.sessionStore.Load()
 	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submit", nil)
 	sess.AddSessionCookies(req)
 
