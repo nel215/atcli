@@ -22,7 +22,13 @@ func New() *Problem {
 
 func (p *Problem) Execute() error {
 	sess, err := p.sessionStore.Load()
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submit", nil)
+	if err != nil {
+		return err
+	}
 	sess.AddSessionCookies(req)
 
 	resp, err := http.DefaultClient.Do(req)
