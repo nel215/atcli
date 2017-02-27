@@ -3,7 +3,7 @@ package submit
 import (
 	"errors"
 	"fmt"
-	"github.com/nel215/atcli/login"
+	"github.com/nel215/atcli/session"
 	"golang.org/x/net/html"
 	"net/http"
 	"net/http/cookiejar"
@@ -19,7 +19,7 @@ func createForm(problemId int64, languageId int64, sourceCode []byte, csrfToken 
 	return data
 }
 
-func extractCSRFToken(sess *login.Session) (string, error) {
+func extractCSRFToken(sess *session.Session) (string, error) {
 	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submit", nil)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -61,7 +61,7 @@ func extractCSRFToken(sess *login.Session) (string, error) {
 	return "", nil
 }
 
-func Submit(sess *login.Session, problemId int64, languageId int64, sourceCode []byte) error {
+func Submit(sess *session.Session, problemId int64, languageId int64, sourceCode []byte) error {
 	jar, err := cookiejar.New(nil)
 	cookies := sess.GetSessionCookies()
 	u, err := url.Parse("https://practice.contest.atcoder.jp")

@@ -1,14 +1,14 @@
 package store
 
 import (
-	"github.com/nel215/atcli/login"
+	"github.com/nel215/atcli/session"
 	"io/ioutil"
 	"os"
 	"testing"
 )
 
 func TestSave(t *testing.T) {
-	sess := &login.Session{
+	sess := &session.Session{
 		"_session",
 		"_issue_time",
 		"_kick_id",

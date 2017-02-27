@@ -2,7 +2,7 @@ package store
 
 import (
 	"encoding/json"
-	"github.com/nel215/atcli/login"
+	"github.com/nel215/atcli/session"
 	"io/ioutil"
 	"os"
 )
@@ -13,7 +13,7 @@ func NewSessionStore() *SessionStore {
 	return &SessionStore{}
 }
 
-func (ss *SessionStore) Save(sess *login.Session) error {
+func (ss *SessionStore) Save(sess *session.Session) error {
 	jb, err := json.Marshal(sess)
 	if err != nil {
 		return err
@@ -27,14 +27,14 @@ func (ss *SessionStore) Save(sess *login.Session) error {
 	return nil
 }
 
-func (ss *SessionStore) Load() (*login.Session, error) {
+func (ss *SessionStore) Load() (*session.Session, error) {
 	f, err := os.Open("./.session.json")
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
 	bs, err := ioutil.ReadAll(f)
-	sess := &login.Session{}
+	sess := &session.Session{}
 	err = json.Unmarshal(bs, sess)
 	if err != nil {
 		return nil, err

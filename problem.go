@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/nel215/atcli/login"
+	"github.com/nel215/atcli/session"
 	"golang.org/x/net/html"
 	"net/http"
 )
 
-func DescribeProblem(sess *login.Session) error {
+func DescribeProblem(sess *session.Session) error {
 	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submit", nil)
 	sess.AddSessionCookies(req)
 

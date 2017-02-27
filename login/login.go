@@ -3,6 +3,7 @@ package login
 import (
 	"errors"
 	"fmt"
+	"github.com/nel215/atcli/session"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -25,7 +26,7 @@ func post(name string, password string) (*http.Response, error) {
 	return http.DefaultClient.PostForm("https://practice.contest.atcoder.jp/login", data)
 }
 
-func (l *Login) Submit(name string, password string) (*Session, error) {
+func (l *Login) Submit(name string, password string) (*session.Session, error) {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return nil, err
@@ -44,47 +45,7 @@ func (l *Login) Submit(name string, password string) (*Session, error) {
 	if err != nil {
 		return nil, err
 	}
-	s := NewSessionFromCookies(jar.Cookies(u))
+	s := session.NewSessionFromCookies(jar.Cookies(u))
 
 	return s, nil
-}
-
-type Session struct {
-	Session   string
-	IssueTime string
-	KickId    string
-	UserID    string
-}
-
-func NewSessionFromCookies(cookies []*http.Cookie) *Session {
-	s := &Session{}
-	for _, c := range cookies {
-		switch c.Name {
-		case "_session":
-			s.Session = c.Value
-		case "_issue_time":
-			s.IssueTime = c.Value
-		case "_kick_id":
-			s.KickId = c.Value
-		case "_user_id":
-			s.UserID = c.Value
-		}
-	}
-	return s
-}
-
-func (s *Session) AddSessionCookies(req *http.Request) {
-	req.AddCookie(&http.Cookie{Name: "_session", Value: s.Session})
-	req.AddCookie(&http.Cookie{Name: "_issue_time", Value: s.IssueTime})
-	req.AddCookie(&http.Cookie{Name: "_kick_id", Value: s.KickId})
-	req.AddCookie(&http.Cookie{Name: "_user_id", Value: s.UserID})
-}
-
-func (s *Session) GetSessionCookies() []*http.Cookie {
-	return []*http.Cookie{
-		&http.Cookie{Name: "_session", Value: s.Session},
-		&http.Cookie{Name: "_issue_time", Value: s.IssueTime},
-		&http.Cookie{Name: "_kick_id", Value: s.KickId},
-		&http.Cookie{Name: "_user_id", Value: s.UserID},
-	}
 }
