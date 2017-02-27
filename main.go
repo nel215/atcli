@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"github.com/nel215/atcli/login"
+	"github.com/nel215/atcli/problem"
 	"github.com/nel215/atcli/setup"
 	"github.com/nel215/atcli/store"
 	"github.com/nel215/atcli/submit"
@@ -80,7 +81,7 @@ func main() {
 				if err != nil {
 					return err
 				}
-				err = DescribeProblem(sess)
+				err = problem.DescribeProblem(sess)
 				if err != nil {
 					return err
 				}
