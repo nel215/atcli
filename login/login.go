@@ -79,3 +79,12 @@ func (s *Session) AddSessionCookies(req *http.Request) {
 	req.AddCookie(&http.Cookie{Name: "_kick_id", Value: s.KickId})
 	req.AddCookie(&http.Cookie{Name: "_user_id", Value: s.UserID})
 }
+
+func (s *Session) GetSessionCookies() []*http.Cookie {
+	return []*http.Cookie{
+		&http.Cookie{Name: "_session", Value: s.Session},
+		&http.Cookie{Name: "_issue_time", Value: s.IssueTime},
+		&http.Cookie{Name: "_kick_id", Value: s.KickId},
+		&http.Cookie{Name: "_user_id", Value: s.UserID},
+	}
+}
