@@ -6,6 +6,8 @@ import (
 	"github.com/nel215/atcli/store"
 	"golang.org/x/net/html"
 	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 )
 
 type Problem struct {
@@ -21,17 +23,20 @@ func New() *Problem {
 }
 
 func (p *Problem) Execute() error {
+	jar, err := cookiejar.New(nil)
+	u, err := url.Parse("https://practice.contest.atcoder.jp")
+	if err != nil {
+		return err
+	}
 	sess, err := p.sessionStore.Load()
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submit", nil)
-	if err != nil {
-		return err
-	}
-	sess.AddSessionCookies(req)
+	cookies := sess.GetSessionCookies()
+	jar.SetCookies(u, cookies)
+	http.DefaultClient.Jar = jar
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := http.Get("https://practice.contest.atcoder.jp/submit")
 	if err != nil {
 		return err
 	}
