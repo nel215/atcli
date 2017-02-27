@@ -14,17 +14,26 @@ type Problem struct {
 	sessionStore interface {
 		Load() (*session.Session, error)
 	}
+	configStore interface {
+		Load() (*store.Config, error)
+	}
 }
 
 func New() *Problem {
 	return &Problem{
 		store.NewSessionStore(),
+		store.NewConfigStore(),
 	}
 }
 
 func (p *Problem) Execute() error {
+	config, err := p.configStore.Load()
+	if err != nil {
+		return err
+	}
+	contestUrl := config.ContestUrl
 	jar, err := cookiejar.New(nil)
-	u, err := url.Parse("https://practice.contest.atcoder.jp")
+	u, err := url.Parse(contestUrl)
 	if err != nil {
 		return err
 	}
@@ -36,7 +45,7 @@ func (p *Problem) Execute() error {
 	jar.SetCookies(u, cookies)
 	http.DefaultClient.Jar = jar
 
-	resp, err := http.Get("https://practice.contest.atcoder.jp/submit")
+	resp, err := http.Get(fmt.Sprintf("%s/submit", contestUrl))
 	if err != nil {
 		return err
 	}
