@@ -72,3 +72,10 @@ func NewSessionFromCookies(cookies []*http.Cookie) *Session {
 	}
 	return s
 }
+
+func (s *Session) AddSessionCookies(req *http.Request) {
+	req.AddCookie(&http.Cookie{Name: "_session", Value: s.Session})
+	req.AddCookie(&http.Cookie{Name: "_issue_time", Value: s.IssueTime})
+	req.AddCookie(&http.Cookie{Name: "_kick_id", Value: s.KickId})
+	req.AddCookie(&http.Cookie{Name: "_user_id", Value: s.UserID})
+}
