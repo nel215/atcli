@@ -18,7 +18,7 @@ func postForTesing(name string, password string) (*http.Response, error) {
 		header.Add("Set-Cookie", c.String())
 	}
 	resp := &http.Response{
-		StatusCode: 302,
+		StatusCode: 200,
 		Header:     header,
 	}
 

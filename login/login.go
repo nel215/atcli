@@ -2,6 +2,7 @@ package login
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -52,8 +53,9 @@ func (l *Login) Submit(name string, password string) (*Session, error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != 302 {
-		return nil, errors.New("login failed")
+	if resp.StatusCode != 200 {
+		m := fmt.Sprintf("expected StatusCode is 200. got %d", resp.StatusCode)
+		return nil, errors.New(m)
 	}
 
 	s := NewSessionFromCookies(resp.Cookies())
