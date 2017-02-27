@@ -81,7 +81,8 @@ func main() {
 				if err != nil {
 					return err
 				}
-				err = problem.DescribeProblem(sess)
+				p := problem.New()
+				err = p.Execute(sess)
 				if err != nil {
 					return err
 				}

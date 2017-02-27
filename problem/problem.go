@@ -7,7 +7,14 @@ import (
 	"net/http"
 )
 
-func DescribeProblem(sess *session.Session) error {
+type Problem struct {
+}
+
+func New() *Problem {
+	return &Problem{}
+}
+
+func (p *Problem) Execute(sess *session.Session) error {
 	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submit", nil)
 	sess.AddSessionCookies(req)
 
