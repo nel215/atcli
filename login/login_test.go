@@ -2,24 +2,26 @@ package login
 
 import (
 	"net/http"
+	"net/url"
 	"testing"
 )
 
 func postForTesing(name string, password string) (*http.Response, error) {
-	header := http.Header{}
-	cookies := []http.Cookie{
-		http.Cookie{Name: "_session", Value: "_session"},
-		http.Cookie{Name: "_issue_time", Value: "_issue_time"},
-		http.Cookie{Name: "_kick_id", Value: "_kick_id"},
-		http.Cookie{Name: "_user_id", Value: "_user_id"},
+	cookies := []*http.Cookie{
+		&http.Cookie{Name: "_session", Value: "_session"},
+		&http.Cookie{Name: "_issue_time", Value: "_issue_time"},
+		&http.Cookie{Name: "_kick_id", Value: "_kick_id"},
+		&http.Cookie{Name: "_user_id", Value: "_user_id"},
 	}
 
-	for _, c := range cookies {
-		header.Add("Set-Cookie", c.String())
+	u, err := url.Parse("https://practice.contest.atcoder.jp")
+	if err != nil {
+		return nil, err
 	}
+	http.DefaultClient.Jar.SetCookies(u, cookies)
+
 	resp := &http.Response{
 		StatusCode: 200,
-		Header:     header,
 	}
 
 	return resp, nil

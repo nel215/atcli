@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 )
 
@@ -49,6 +50,11 @@ func NewSessionFromCookies(cookies []*http.Cookie) *Session {
 }
 
 func (l *Login) Submit(name string, password string) (*Session, error) {
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return nil, err
+	}
+	http.DefaultClient.Jar = jar
 	resp, err := l.post(name, password)
 	if err != nil {
 		return nil, err
@@ -58,7 +64,11 @@ func (l *Login) Submit(name string, password string) (*Session, error) {
 		return nil, errors.New(m)
 	}
 
-	s := NewSessionFromCookies(resp.Cookies())
+	u, err := url.Parse("https://practice.contest.atcoder.jp")
+	if err != nil {
+		return nil, err
+	}
+	s := NewSessionFromCookies(jar.Cookies(u))
 
 	return s, nil
 }
