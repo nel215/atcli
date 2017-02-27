@@ -25,30 +25,6 @@ func post(name string, password string) (*http.Response, error) {
 	return http.DefaultClient.PostForm("https://practice.contest.atcoder.jp/login", data)
 }
 
-type Session struct {
-	Session   string
-	IssueTime string
-	KickId    string
-	UserID    string
-}
-
-func NewSessionFromCookies(cookies []*http.Cookie) *Session {
-	s := &Session{}
-	for _, c := range cookies {
-		switch c.Name {
-		case "_session":
-			s.Session = c.Value
-		case "_issue_time":
-			s.IssueTime = c.Value
-		case "_kick_id":
-			s.KickId = c.Value
-		case "_user_id":
-			s.UserID = c.Value
-		}
-	}
-	return s
-}
-
 func (l *Login) Submit(name string, password string) (*Session, error) {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
@@ -71,4 +47,28 @@ func (l *Login) Submit(name string, password string) (*Session, error) {
 	s := NewSessionFromCookies(jar.Cookies(u))
 
 	return s, nil
+}
+
+type Session struct {
+	Session   string
+	IssueTime string
+	KickId    string
+	UserID    string
+}
+
+func NewSessionFromCookies(cookies []*http.Cookie) *Session {
+	s := &Session{}
+	for _, c := range cookies {
+		switch c.Name {
+		case "_session":
+			s.Session = c.Value
+		case "_issue_time":
+			s.IssueTime = c.Value
+		case "_kick_id":
+			s.KickId = c.Value
+		case "_user_id":
+			s.UserID = c.Value
+		}
+	}
+	return s
 }
