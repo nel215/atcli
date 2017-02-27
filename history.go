@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/nel215/atcmd/login"
+	"github.com/nel215/atcli/login"
 	"io/ioutil"
 	"log"
 	"net/http"

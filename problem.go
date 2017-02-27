@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/nel215/atcmd/login"
+	"github.com/nel215/atcli/login"
 	"golang.org/x/net/html"
 	"net/http"
 )

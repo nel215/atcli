@@ -2,7 +2,7 @@ package store
 
 import (
 	"encoding/json"
-	"github.com/nel215/atcmd/login"
+	"github.com/nel215/atcli/login"
 	"io/ioutil"
 	"os"
 )
