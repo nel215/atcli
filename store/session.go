@@ -3,6 +3,7 @@ package store
 import (
 	"encoding/json"
 	"github.com/nel215/atcmd/login"
+	"io/ioutil"
 	"os"
 )
 
@@ -24,4 +25,19 @@ func (ss *SessionStore) Save(sess *login.Session) error {
 	defer f.Close()
 	f.Write(jb)
 	return nil
+}
+
+func (ss *SessionStore) Load() (*login.Session, error) {
+	f, err := os.Open("./.session.json")
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	bs, err := ioutil.ReadAll(f)
+	sess := &login.Session{}
+	err = json.Unmarshal(bs, sess)
+	if err != nil {
+		return nil, err
+	}
+	return sess, nil
 }
