@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"github.com/nel215/atcli/api"
 	"github.com/nel215/atcli/login"
 	"github.com/nel215/atcli/problem"
 	"github.com/nel215/atcli/setup"
@@ -68,7 +69,7 @@ func main() {
 					return err
 				}
 				log.Println(sess)
-				DescribeHistory(sess)
+				api.DescribeHistory(sess)
 				return nil
 			},
 		},
