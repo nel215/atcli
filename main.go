@@ -68,7 +68,6 @@ func main() {
 				if err != nil {
 					return err
 				}
-				log.Println(sess)
 				api.DescribeHistory(sess)
 				return nil
 			},
