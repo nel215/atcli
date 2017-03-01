@@ -68,7 +68,8 @@ func main() {
 				if err != nil {
 					return err
 				}
-				err = api.DescribeHistory(sess)
+				h := &api.History{}
+				err = h.Execute(sess)
 				if err != nil {
 					return err
 				}

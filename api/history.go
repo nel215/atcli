@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
-func DescribeHistory(sess *session.Session) error {
+type History struct {
+}
+
+func (h *History) Execute(sess *session.Session) error {
 	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submissions/me", nil)
 	if err != nil {
 		return err
