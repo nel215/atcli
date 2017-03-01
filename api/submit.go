@@ -26,22 +26,23 @@ type Submit struct {
 }
 
 func NewSubmit(problemId int64, languageId int64, sourceCodePath string) (*Submit, error) {
-	if problemId == 0 {
-		return nil, errors.New("problemId is required")
-	}
-	if languageId == 0 {
-		return nil, errors.New("languageId is required")
-	}
-	if sourceCodePath == "" {
-		return nil, errors.New("sourceCodePath is required")
-	}
-	return &Submit{
+	s := &Submit{
 		problemId:      problemId,
 		languageId:     languageId,
 		sourceCodePath: sourceCodePath,
 		sessionStore:   store.NewSessionStore(),
 		configStore:    store.NewConfigStore(),
-	}, nil
+	}
+	if s.problemId == 0 {
+		return nil, errors.New("problemId is required")
+	}
+	if s.languageId == 0 {
+		return nil, errors.New("languageId is required")
+	}
+	if s.sourceCodePath == "" {
+		return nil, errors.New("sourceCodePath is required")
+	}
+	return s, nil
 }
 
 func (s *Submit) createForm(csrfToken string) (url.Values, error) {
