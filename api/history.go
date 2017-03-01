@@ -13,21 +13,31 @@ type History struct {
 	sessionStore interface {
 		Load() (*session.Session, error)
 	}
+	configStore interface {
+		Load() (*store.Config, error)
+	}
 }
 
 func NewHistory() *History {
 	return &History{
 		sessionStore: store.NewSessionStore(),
+		configStore:  store.NewConfigStore(),
 	}
 }
 
 func (h *History) Execute() error {
+	config, err := h.configStore.Load()
+	if err != nil {
+		return err
+	}
+	contestUrl := config.ContestUrl
+
 	sess, err := h.sessionStore.Load()
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submissions/me", nil)
+	req, err := http.NewRequest(http.MethodGet, contestUrl+"/submissions/me", nil)
 	if err != nil {
 		return err
 	}
