@@ -111,7 +111,7 @@ func main() {
 					return err
 				}
 
-				err = api.Submit(sess, problemId, languageId, sourceCode)
+				err = api.NewSubmit().Execute(sess, problemId, languageId, sourceCode)
 				if err != nil {
 					return err
 				}

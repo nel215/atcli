@@ -10,6 +10,13 @@ import (
 	"net/url"
 )
 
+type Submit struct {
+}
+
+func NewSubmit() *Submit {
+	return &Submit{}
+}
+
 func createForm(problemId int64, languageId int64, sourceCode []byte, csrfToken string) url.Values {
 	data := url.Values{}
 	data.Set("__session", csrfToken)
@@ -61,7 +68,7 @@ func extractCSRFToken(sess *session.Session) (string, error) {
 	return "", nil
 }
 
-func Submit(sess *session.Session, problemId int64, languageId int64, sourceCode []byte) error {
+func (s *Submit) Execute(sess *session.Session, problemId int64, languageId int64, sourceCode []byte) error {
 	jar, err := cookiejar.New(nil)
 	cookies := sess.GetSessionCookies()
 	u, err := url.Parse("https://practice.contest.atcoder.jp")
