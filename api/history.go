@@ -59,7 +59,7 @@ func (h *History) Execute() error {
 	defer resp.Body.Close()
 
 	z := html.NewTokenizer(resp.Body)
-	texts := make([]string, 0)
+	texts := []string{}
 	fmt.Print("# History\n\n")
 	for {
 		tt := z.Next()
@@ -91,6 +91,7 @@ func (h *History) Execute() error {
 			if t.Data == "tr" {
 				if len(texts) > 0 {
 					fmt.Printf("- %s\n", strings.Join(texts, ", "))
+					texts = []string{}
 				}
 			}
 		}
