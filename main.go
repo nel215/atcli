@@ -7,7 +7,6 @@ import (
 	"github.com/nel215/atcli/problem"
 	"github.com/nel215/atcli/setup"
 	"github.com/nel215/atcli/store"
-	"github.com/nel215/atcli/submit"
 	"github.com/urfave/cli"
 	"io/ioutil"
 	"log"
@@ -112,7 +111,7 @@ func main() {
 					return err
 				}
 
-				err = submit.Submit(sess, problemId, languageId, sourceCode)
+				err = api.Submit(sess, problemId, languageId, sourceCode)
 				if err != nil {
 					return err
 				}

@@ -1,4 +1,4 @@
-package submit
+package api
 
 import (
 	"errors"
