@@ -33,6 +33,9 @@ func (p *Problem) Execute() error {
 	}
 	contestUrl := config.ContestUrl
 	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return err
+	}
 	u, err := url.Parse(contestUrl)
 	if err != nil {
 		return err
