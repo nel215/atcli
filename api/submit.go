@@ -15,11 +15,15 @@ type Submit struct {
 	sessionStore interface {
 		Load() (*session.Session, error)
 	}
+	configStore interface {
+		Load() (*store.Config, error)
+	}
 }
 
 func NewSubmit() *Submit {
 	return &Submit{
 		sessionStore: store.NewSessionStore(),
+		configStore:  store.NewConfigStore(),
 	}
 }
 
@@ -32,10 +36,8 @@ func createForm(problemId int64, languageId int64, sourceCode []byte, csrfToken 
 	return data
 }
 
-func extractCSRFToken(sess *session.Session) (string, error) {
-	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submit", nil)
-
-	resp, err := http.DefaultClient.Do(req)
+func extractCSRFToken(sess *session.Session, contestUrl string) (string, error) {
+	resp, err := http.Get(contestUrl + "/submit")
 	if err != nil {
 		return "", err
 	}
@@ -79,21 +81,26 @@ func (s *Submit) Execute(problemId int64, languageId int64, sourceCode []byte) e
 	if err != nil {
 		return err
 	}
+	config, err := s.configStore.Load()
+	if err != nil {
+		return err
+	}
+	contestUrl := config.ContestUrl
 	jar, err := cookiejar.New(nil)
 	cookies := sess.GetSessionCookies()
-	u, err := url.Parse("https://practice.contest.atcoder.jp")
+	u, err := url.Parse(contestUrl)
 	if err != nil {
 		return err
 	}
 	jar.SetCookies(u, cookies)
 	http.DefaultClient.Jar = jar
-	csrfToken, err := extractCSRFToken(sess)
+	csrfToken, err := extractCSRFToken(sess, contestUrl)
 	if err != nil {
 		return err
 	}
 	data := createForm(problemId, languageId, sourceCode, csrfToken)
-	submitUrl := fmt.Sprintf("https://practice.contest.atcoder.jp/submit?task_id=%d", problemId)
-	resp, err := http.DefaultClient.PostForm(submitUrl, data)
+	submitUrl := fmt.Sprintf("%s/submit?task_id=%d", contestUrl, problemId)
+	resp, err := http.PostForm(submitUrl, data)
 	if err != nil {
 		return err
 	}
