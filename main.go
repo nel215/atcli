@@ -7,7 +7,6 @@ import (
 	"github.com/nel215/atcli/problem"
 	"github.com/nel215/atcli/setup"
 	"github.com/urfave/cli"
-	"io/ioutil"
 	"log"
 	"os"
 )
@@ -88,22 +87,11 @@ func main() {
 				languageId := c.Int64("l")
 				sourceCodePath := c.String("s")
 
-				if languageId == 0 {
-					return errors.New("languageId(-l) is required")
-				}
-				if sourceCodePath == "" {
-					return errors.New("sourceCodePath(-s) is required")
-				}
-
-				f, err := os.Open(sourceCodePath)
+				s, err := api.NewSubmit(problemId, languageId, sourceCodePath)
 				if err != nil {
 					return err
 				}
-				defer f.Close()
-				sourceCode, err := ioutil.ReadAll(f)
-
-				s, err := api.NewSubmit(problemId)
-				err = s.Execute(languageId, sourceCode)
+				err = s.Execute()
 				if err != nil {
 					return err
 				}

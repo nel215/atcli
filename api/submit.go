@@ -6,14 +6,18 @@ import (
 	"github.com/nel215/atcli/session"
 	"github.com/nel215/atcli/store"
 	"golang.org/x/net/html"
+	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"os"
 )
 
 type Submit struct {
-	problemId    int64
-	sessionStore interface {
+	problemId      int64
+	languageId     int64
+	sourceCodePath string
+	sessionStore   interface {
 		Load() (*session.Session, error)
 	}
 	configStore interface {
@@ -21,12 +25,19 @@ type Submit struct {
 	}
 }
 
-func NewSubmit(problemId int64) (*Submit, error) {
+func NewSubmit(problemId int64, languageId int64, sourceCodePath string) (*Submit, error) {
 	if problemId == 0 {
 		return nil, errors.New("problemId is required")
 	}
+	if languageId == 0 {
+		return nil, errors.New("languageId is required")
+	}
+	if sourceCodePath == "" {
+		return nil, errors.New("sourceCodePath is required")
+	}
 	return &Submit{
 		problemId:    problemId,
+		languageId:   languageId,
 		sessionStore: store.NewSessionStore(),
 		configStore:  store.NewConfigStore(),
 	}, nil
@@ -81,7 +92,17 @@ func extractCSRFToken(sess *session.Session, contestUrl string) (string, error) 
 	return "", nil
 }
 
-func (s *Submit) Execute(languageId int64, sourceCode []byte) error {
+func (s *Submit) Execute() error {
+	f, err := os.Open(s.sourceCodePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	sourceCode, err := ioutil.ReadAll(f)
+	if err != nil {
+		return err
+	}
+
 	sess, err := s.sessionStore.Load()
 	if err != nil {
 		return err
@@ -103,7 +124,7 @@ func (s *Submit) Execute(languageId int64, sourceCode []byte) error {
 	if err != nil {
 		return err
 	}
-	data := createForm(s.problemId, languageId, sourceCode, csrfToken)
+	data := createForm(s.problemId, s.languageId, sourceCode, csrfToken)
 	submitUrl := fmt.Sprintf("%s/submit?task_id=%d", contestUrl, s.problemId)
 	resp, err := http.PostForm(submitUrl, data)
 	if err != nil {
