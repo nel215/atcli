@@ -63,13 +63,7 @@ func main() {
 			Name:  "history",
 			Usage: "describe submission history",
 			Action: func(c *cli.Context) error {
-				ss := store.NewSessionStore()
-				sess, err := ss.Load()
-				if err != nil {
-					return err
-				}
-				h := &api.History{}
-				err = h.Execute(sess)
+				err := api.NewHistory().Execute()
 				if err != nil {
 					return err
 				}

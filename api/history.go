@@ -3,15 +3,30 @@ package api
 import (
 	"fmt"
 	"github.com/nel215/atcli/session"
+	"github.com/nel215/atcli/store"
 	"golang.org/x/net/html"
 	"net/http"
 	"strings"
 )
 
 type History struct {
+	sessionStore interface {
+		Load() (*session.Session, error)
+	}
 }
 
-func (h *History) Execute(sess *session.Session) error {
+func NewHistory() *History {
+	return &History{
+		sessionStore: store.NewSessionStore(),
+	}
+}
+
+func (h *History) Execute() error {
+	sess, err := h.sessionStore.Load()
+	if err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest(http.MethodGet, "https://practice.contest.atcoder.jp/submissions/me", nil)
 	if err != nil {
 		return err
