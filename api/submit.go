@@ -43,13 +43,22 @@ func NewSubmit(problemId int64, languageId int64, sourceCodePath string) (*Submi
 	}, nil
 }
 
-func createForm(problemId int64, languageId int64, sourceCode []byte, csrfToken string) url.Values {
+func (s *Submit) createForm(csrfToken string) (url.Values, error) {
+	f, err := os.Open(s.sourceCodePath)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	sourceCode, err := ioutil.ReadAll(f)
+	if err != nil {
+		return nil, err
+	}
 	data := url.Values{}
 	data.Set("__session", csrfToken)
-	data.Set("task_id", fmt.Sprintf("%d", problemId))
-	data.Set(fmt.Sprintf("language_id_%d", problemId), fmt.Sprintf("%d", languageId))
+	data.Set("task_id", fmt.Sprintf("%d", s.problemId))
+	data.Set(fmt.Sprintf("language_id_%d", s.problemId), fmt.Sprintf("%d", s.languageId))
 	data.Set("source_code", string(sourceCode))
-	return data
+	return data, nil
 }
 
 func extractCSRFToken(sess *session.Session, contestUrl string) (string, error) {
@@ -93,15 +102,6 @@ func extractCSRFToken(sess *session.Session, contestUrl string) (string, error) 
 }
 
 func (s *Submit) Execute() error {
-	f, err := os.Open(s.sourceCodePath)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	sourceCode, err := ioutil.ReadAll(f)
-	if err != nil {
-		return err
-	}
 
 	sess, err := s.sessionStore.Load()
 	if err != nil {
@@ -124,7 +124,11 @@ func (s *Submit) Execute() error {
 	if err != nil {
 		return err
 	}
-	data := createForm(s.problemId, s.languageId, sourceCode, csrfToken)
+
+	data, err := s.createForm(csrfToken)
+	if err != nil {
+		return err
+	}
 	submitUrl := fmt.Sprintf("%s/submit?task_id=%d", contestUrl, s.problemId)
 	resp, err := http.PostForm(submitUrl, data)
 	if err != nil {
