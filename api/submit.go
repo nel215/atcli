@@ -12,6 +12,7 @@ import (
 )
 
 type Submit struct {
+	problemId    int64
 	sessionStore interface {
 		Load() (*session.Session, error)
 	}
@@ -20,11 +21,15 @@ type Submit struct {
 	}
 }
 
-func NewSubmit() *Submit {
+func NewSubmit(problemId int64) (*Submit, error) {
+	if problemId == 0 {
+		return nil, errors.New("problemId is required")
+	}
 	return &Submit{
+		problemId:    problemId,
 		sessionStore: store.NewSessionStore(),
 		configStore:  store.NewConfigStore(),
-	}
+	}, nil
 }
 
 func createForm(problemId int64, languageId int64, sourceCode []byte, csrfToken string) url.Values {
@@ -76,7 +81,7 @@ func extractCSRFToken(sess *session.Session, contestUrl string) (string, error) 
 	return "", nil
 }
 
-func (s *Submit) Execute(problemId int64, languageId int64, sourceCode []byte) error {
+func (s *Submit) Execute(languageId int64, sourceCode []byte) error {
 	sess, err := s.sessionStore.Load()
 	if err != nil {
 		return err
@@ -98,8 +103,8 @@ func (s *Submit) Execute(problemId int64, languageId int64, sourceCode []byte) e
 	if err != nil {
 		return err
 	}
-	data := createForm(problemId, languageId, sourceCode, csrfToken)
-	submitUrl := fmt.Sprintf("%s/submit?task_id=%d", contestUrl, problemId)
+	data := createForm(s.problemId, languageId, sourceCode, csrfToken)
+	submitUrl := fmt.Sprintf("%s/submit?task_id=%d", contestUrl, s.problemId)
 	resp, err := http.PostForm(submitUrl, data)
 	if err != nil {
 		return err

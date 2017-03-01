@@ -87,9 +87,7 @@ func main() {
 				problemId := c.Int64("p")
 				languageId := c.Int64("l")
 				sourceCodePath := c.String("s")
-				if problemId == 0 {
-					return errors.New("problemId(-p) is required")
-				}
+
 				if languageId == 0 {
 					return errors.New("languageId(-l) is required")
 				}
@@ -104,7 +102,8 @@ func main() {
 				defer f.Close()
 				sourceCode, err := ioutil.ReadAll(f)
 
-				err = api.NewSubmit().Execute(problemId, languageId, sourceCode)
+				s, err := api.NewSubmit(problemId)
+				err = s.Execute(languageId, sourceCode)
 				if err != nil {
 					return err
 				}
