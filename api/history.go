@@ -6,6 +6,8 @@ import (
 	"github.com/nel215/atcli/store"
 	"golang.org/x/net/html"
 	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 	"strings"
 )
 
@@ -32,17 +34,25 @@ func (h *History) Execute() error {
 	}
 	contestUrl := config.ContestUrl
 
-	sess, err := h.sessionStore.Load()
+	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodGet, contestUrl+"/submissions/me", nil)
+	u, err := url.Parse(contestUrl)
 	if err != nil {
 		return err
 	}
-	sess.AddSessionCookies(req)
-	resp, err := http.DefaultClient.Do(req)
+
+	sess, err := h.sessionStore.Load()
+	if err != nil {
+		return err
+	}
+	cookies := sess.GetSessionCookies()
+	jar.SetCookies(u, cookies)
+	http.DefaultClient.Jar = jar
+
+	resp, err := http.Get(contestUrl + "/submissions/me")
 	if err != nil {
 		return err
 	}
