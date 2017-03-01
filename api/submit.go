@@ -102,6 +102,15 @@ func extractCSRFToken(sess *session.Session, contestUrl string) (string, error) 
 	return "", nil
 }
 
+func (s *Submit) createSubmitUrl(contestUrl string) (string, error) {
+	u, err := url.Parse(contestUrl)
+	if err != nil {
+		return "", err
+	}
+	u.Scheme = "https"
+	return fmt.Sprintf("%s/submit?task_id=%d", u.String(), s.problemId), nil
+}
+
 func (s *Submit) Execute() error {
 
 	sess, err := s.sessionStore.Load()
@@ -130,7 +139,10 @@ func (s *Submit) Execute() error {
 	if err != nil {
 		return err
 	}
-	submitUrl := fmt.Sprintf("%s/submit?task_id=%d", contestUrl, s.problemId)
+	submitUrl, err := s.createSubmitUrl(contestUrl)
+	if err != nil {
+		return err
+	}
 	resp, err := http.PostForm(submitUrl, data)
 	if err != nil {
 		return err
