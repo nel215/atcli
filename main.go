@@ -6,7 +6,6 @@ import (
 	"github.com/nel215/atcli/login"
 	"github.com/nel215/atcli/problem"
 	"github.com/nel215/atcli/setup"
-	"github.com/nel215/atcli/store"
 	"github.com/urfave/cli"
 	"io/ioutil"
 	"log"
@@ -105,13 +104,7 @@ func main() {
 				defer f.Close()
 				sourceCode, err := ioutil.ReadAll(f)
 
-				ss := store.NewSessionStore()
-				sess, err := ss.Load()
-				if err != nil {
-					return err
-				}
-
-				err = api.NewSubmit().Execute(sess, problemId, languageId, sourceCode)
+				err = api.NewSubmit().Execute(problemId, languageId, sourceCode)
 				if err != nil {
 					return err
 				}

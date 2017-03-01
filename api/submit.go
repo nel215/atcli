@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/nel215/atcli/session"
+	"github.com/nel215/atcli/store"
 	"golang.org/x/net/html"
 	"net/http"
 	"net/http/cookiejar"
@@ -11,10 +12,15 @@ import (
 )
 
 type Submit struct {
+	sessionStore interface {
+		Load() (*session.Session, error)
+	}
 }
 
 func NewSubmit() *Submit {
-	return &Submit{}
+	return &Submit{
+		sessionStore: store.NewSessionStore(),
+	}
 }
 
 func createForm(problemId int64, languageId int64, sourceCode []byte, csrfToken string) url.Values {
@@ -68,7 +74,11 @@ func extractCSRFToken(sess *session.Session) (string, error) {
 	return "", nil
 }
 
-func (s *Submit) Execute(sess *session.Session, problemId int64, languageId int64, sourceCode []byte) error {
+func (s *Submit) Execute(problemId int64, languageId int64, sourceCode []byte) error {
+	sess, err := s.sessionStore.Load()
+	if err != nil {
+		return err
+	}
 	jar, err := cookiejar.New(nil)
 	cookies := sess.GetSessionCookies()
 	u, err := url.Parse("https://practice.contest.atcoder.jp")
