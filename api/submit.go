@@ -36,10 +36,11 @@ func NewSubmit(problemId int64, languageId int64, sourceCodePath string) (*Submi
 		return nil, errors.New("sourceCodePath is required")
 	}
 	return &Submit{
-		problemId:    problemId,
-		languageId:   languageId,
-		sessionStore: store.NewSessionStore(),
-		configStore:  store.NewConfigStore(),
+		problemId:      problemId,
+		languageId:     languageId,
+		sourceCodePath: sourceCodePath,
+		sessionStore:   store.NewSessionStore(),
+		configStore:    store.NewConfigStore(),
 	}, nil
 }
 
