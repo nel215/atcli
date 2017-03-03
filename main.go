@@ -80,6 +80,13 @@ func main() {
 			},
 		},
 		{
+			Name:  "language",
+			Usage: "describe language list of specified problem",
+			Action: func(c *cli.Context) error {
+				return nil
+			},
+		},
+		{
 			Name:  "submit",
 			Usage: "submit source code",
 			Action: func(c *cli.Context) error {
