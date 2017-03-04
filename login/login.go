@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/nel215/atcli/session"
 	"github.com/nel215/atcli/store"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -31,13 +32,21 @@ func post(name string, password string) (*http.Response, error) {
 	return http.DefaultClient.PostForm("https://practice.contest.atcoder.jp/login", data)
 }
 
-func (l *Login) Submit(name string, password string) error {
+func (l *Login) Submit(user string, password string) error {
+	if user == "" {
+		return errors.New("user is required")
+	}
+	if password == "" {
+		return errors.New("password is required")
+	}
+
+	log.Printf("try logging in by %s...\n", user)
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return err
 	}
 	http.DefaultClient.Jar = jar
-	resp, err := l.post(name, password)
+	resp, err := l.post(user, password)
 	if err != nil {
 		return err
 	}
